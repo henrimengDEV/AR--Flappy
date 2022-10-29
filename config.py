@@ -15,7 +15,7 @@ ASSETS = 'assets'
 IMAGES = os.path.join(ASSETS, 'images')
 SOUNDS = os.path.join(ASSETS, 'sounds')
 
-SPEED = 5
+SPEED = 3
 
 
 # below are some utility functions

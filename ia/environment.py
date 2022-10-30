@@ -10,8 +10,6 @@ class Environment:
         self.__nb_states = len(self.__states)
         self.__str_flappy = str_flappy
 
-        pprint.pprint(self.__states)
-
     def __parse(self, str_flappy):
         result = {}
         start = tuple()
@@ -69,4 +67,8 @@ class Environment:
 
     @property
     def width(self):
-        return self.__cols
+        return self.__cols - 1
+
+    @property
+    def states(self):
+        return self.__states

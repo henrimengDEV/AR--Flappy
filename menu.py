@@ -60,6 +60,7 @@ class Game(Menu):
                 if pipe.collision(player_rect):
                     self.stop_game()
 
+        print(f"x:{self.player.rect.x - self.pipes[0].rectangle_middle.x} y:{self.player.rect.y - self.pipes[0].rectangle_middle.y}")
         self.player.update(events, dt)
 
         if self.is_out_of_map(player_rect):

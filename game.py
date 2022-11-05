@@ -1,22 +1,13 @@
-from objects import *
+from config import *
+from menu_manager import MenuManager
+from objects import Player, Pipe
 
 
-class Menu:
-    def __init__(self, name, manager: 'MenuManager'):
-        self.name = name
-        self.manager = manager  # manager from which this class has been referenced
-
-    def update(self, events: list[pygame.event.Event], dt):
-        pass
-
-    def draw(self, surf: pygame.Surface):
-        pass
-
-
-class Game(Menu):
+class Game:
     def __init__(self, manager: 'MenuManager'):
         super().__init__('game', manager)
         self.player = Player()
+        self.manager = manager
         self.bg = load_image(os.path.join(IMAGES, 'bg.png'))
         self.ground_img = load_image(os.path.join(IMAGES, 'base.png'))
         self.show_score = False
@@ -118,25 +109,3 @@ class Game(Menu):
 
     def display_next_goal(self, surf):
         self.pipes[0].draw(surf, True)
-
-
-
-class MenuManager:
-    def __init__(self):
-        self.menus = {
-            'game': Game(self)
-        }
-        self.mode = 'game'
-        self.menu = self.menus[self.mode]
-
-    def switch_mode(self, mode, reset=False):
-        self.mode = mode
-        self.menu = self.menus[self.mode]
-        if reset:
-            self.menu.__init__(self)
-
-    def update(self, events: list[pygame.event.Event], dt):
-        self.menu.update(events, dt)
-
-    def draw(self, surf: pygame.Surface):
-        self.menu.draw(surf)

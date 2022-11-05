@@ -1,24 +1,13 @@
 import random
+import time
 
 import pygame
 
+from IEntity import IEntity
 from config import *
-import time
 
 
-class BaseObject:
-    """
-    Class to define base signature of all objects
-    """
-
-    def update(self, events: list[pygame.event.Event], dt):
-        pass
-
-    def draw(self, surf: pygame.Surface):
-        pass
-
-
-class Player(BaseObject):
+class Player(IEntity):
     def __init__(self):
         self.x = 150
         self.y = H // 2
@@ -58,10 +47,10 @@ class Player(BaseObject):
 
     def draw(self, surf: pygame.Surface):
         surf.blit(self.image, self.rect)
-        # pygame.draw.rect(surf, 'red', self.rect, 5)
+        pygame.draw.rect(surf, 'red', self.rect, 5)
 
 
-class Pipe(BaseObject):
+class Pipe(IEntity):
     """
     This class contains the pipe object which is itself a collection of 2 pipes
     inverted w.r.t each other
@@ -83,25 +72,32 @@ class Pipe(BaseObject):
         self.visible = True
 
     @property
-    def rect1(self):
+    def rectangle_top(self):
         return pygame.Rect(round(self.x), 0, self.w, self.h1)
 
     @property
-    def rect2(self):
-        return pygame.Rect(round(self.x), self.rect1.bottom + self.gap, self.w, self.h2)
+    def rectangle_bot(self):
+        return pygame.Rect(round(self.x), self.rectangle_top.bottom + self.gap, self.w, self.h2)
+
+    @property
+    def rectangle_middle(self):
+        return pygame.Rect(round(self.x), self.rectangle_top.bottom, self.w, self.gap)
 
     def move(self, speed, dt):
         self.x -= speed * dt
 
     def collision(self, rect: pygame.Rect):
-        if self.rect1.inflate(-10, -10).colliderect(rect) or self.rect2.inflate(-10, -10).colliderect(rect):
+        if self.rectangle_top.inflate(-10, -10).colliderect(rect) or self.rectangle_bot.inflate(-10, -10).colliderect(rect):
             return True
         else:
             return False
 
-    def draw(self, surf: pygame.Surface):
+    def draw(self, surf: pygame.Surface, is_next=False):
         x = round(self.x)
         surf.blit(self.surf1, (x, 0))
-        surf.blit(self.surf2, (x, self.rect1.height + self.gap))
+        surf.blit(self.surf2, (x, self.rectangle_top.height + self.gap))
+        if not is_next:
+            return
+        pygame.draw.rect(surf, 'red', self.rectangle_middle)
         # pygame.draw.rect(surf, 'red', self.rect1)
         # pygame.draw.rect(surf, 'red', self.rect2)

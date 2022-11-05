@@ -1,3 +1,4 @@
+import pickle
 import pprint
 import random
 import time
@@ -7,7 +8,7 @@ from environment import Environment
 
 
 class Agent:
-    def __init__(self, env: Environment, alpha = 1, gamma = 0.2) -> None:
+    def __init__(self, env: Environment, alpha=1, gamma=0.2) -> None:
         super().__init__()
         self.__score = None
         self.__state = None
@@ -17,9 +18,6 @@ class Agent:
         self.__env = env
         self.reset()
         self.__qtable = self.__init_qtable()
-
-        pprint.pprint(self.__qtable)
-
 
     def __init_qtable(self):
         result = {}
@@ -38,22 +36,34 @@ class Agent:
             self.reset()
             for y in range(self.__env.width):
                 self.step()
+                if self.__env.is_death_state(self.state):
+                    break
                 self.__env.print(self)
-                # time.sleep(1)
+                time.sleep(1)
+            print(f"score: {self.__score}")
+            self.reset()
 
     def step(self):
         action = self.best_action()
         reward, self.__state = self.__env.do(self.__state, action)
-        print(f"action: {action} state:{self.__state} score:{self.__score}")
         self.__score += reward
 
         maxQ = max(self.__qtable[self.__state].values())
         self.__qtable[self.state][action] += \
             self.__alpha * (reward + self.__gamma * maxQ - self.__qtable[self.state][action])
+        # print(f"action: {action} state:{self.__state} score:{self.__score} qtable:{self.__qtable[self.state][action]}")
 
     def best_action(self):
         actions = self.__qtable[self.__state]
         return max(actions, key=actions.get)
+
+    def save(self, filename):
+        with open(filename, 'wb') as file:
+            pickle.dump(self.__qtable, file)
+
+    def load(self, filename):
+        with open(filename, 'rb') as file:
+            self.__qtable = pickle.load(file)
 
     @property
     def state(self):

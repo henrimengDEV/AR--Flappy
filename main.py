@@ -1,19 +1,9 @@
-"""
-
-Flappy Bird demo for kengi template
-Intended resolution -> 960 X 540
-TARGET FPS -> 60 FPS
-Delta Time -> Enabled
-Code Readability Level -> Beginners / Intermediate
-
-"""
 import sys
 
 from menu import *
 
 pygame.init()
 clock = pygame.time.Clock()
-
 screen = pygame.display.set_mode((W, H))
 
 
@@ -23,14 +13,9 @@ def main_game():
     menu_manager = MenuManager()
 
     while True:
-        # global event checking
         events = pygame.event.get()
-        for e in events:
-            if e.type == pygame.QUIT:
-                return
-            if e.type == pygame.KEYDOWN:
-                if e.key == pygame.K_ESCAPE:
-                    return
+        set_up_windows(events)
+
 
         # general display blits
         screen.fill('black')
@@ -47,6 +32,16 @@ def main_game():
         if dt == 0:
             dt = 1
 
+        # time.sleep(2)
+
+
+def set_up_windows(events):
+    for e in events:
+        if e.type == pygame.QUIT:
+            return
+        if e.type == pygame.KEYDOWN:
+            if e.key == pygame.K_ESCAPE:
+                return
 
 if __name__ == '__main__':
     main_game()

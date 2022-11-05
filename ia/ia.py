@@ -1,5 +1,7 @@
+import os
+
 from agent import Agent
-from constant import FLAPPY
+from constant import FLAPPY, FILE_QTABLE
 from environment import Environment
 
 
@@ -8,7 +10,11 @@ class Ia:
         super().__init__()
         env = Environment(FLAPPY)
         agent = Agent(env)
-        agent.learn(2)
+        if os.path.exists(FILE_QTABLE):
+            agent.load(FILE_QTABLE)
+        agent.learn(100)
+        agent.save(FILE_QTABLE)
+
 
 
 

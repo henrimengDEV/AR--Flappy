@@ -13,7 +13,7 @@ class Environment:
     def __parse(self, str_flappy):
         result = {}
         start = tuple()
-        lines = str_flappy.strip().splitlines()[::-1]
+        lines = str_flappy.strip().splitlines()
 
         for row, line in enumerate(lines):
             for col, char in enumerate(line):
@@ -30,8 +30,8 @@ class Environment:
         new_state = (state[0] + move[0], state[1] + move[1])
         reward = REWARD_DEFAULT
 
-        if self.is_forbidden_state(new_state):
-            reward = -2 * self.__nb_states
+        if self.is_death_state(new_state):
+            reward = -1000 * self.__nb_states
 
         state = new_state
         return reward, state
@@ -48,9 +48,9 @@ class Environment:
             res += '\n'
         print(res)
 
-    def is_forbidden_state(self, state: tuple[int, int]):
+    def is_death_state(self, state: tuple[int, int]):
         return state not in self.__states \
-               or self.is_tunnel(state) or self.is_start(state) or self.is_out_of_range(state)
+               or self.is_tunnel(state) or self.is_out_of_range(state)
 
     def is_tunnel(self, state: tuple[int, int]):
         return self.__states[state] == FLAPPY_TUNNEL

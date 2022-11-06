@@ -1,4 +1,4 @@
-from objects import *
+from environment import *
 
 
 class Menu:
@@ -16,7 +16,7 @@ class Menu:
 class Game(Menu):
     def __init__(self, manager: 'MenuManager'):
         super().__init__('game', manager)
-        self.player = Player()
+        self.agent = Agent()
         self.bg = load_image(os.path.join(IMAGES, 'bg.png'))
         self.ground_img = load_image(os.path.join(IMAGES, 'base.png'))
         self.show_score = False
@@ -48,7 +48,7 @@ class Game(Menu):
         self.manager.switch_mode('game', reset=True)
 
     def update(self, events: list[pygame.event.Event], dt):
-        player_rect = self.player.rect
+        agent_rect = self.agent.rect
         self.pipes = [i for i in self.pipes if i.visible]
 
         if not self.stopped:
@@ -57,13 +57,13 @@ class Game(Menu):
 
             for pipe in self.pipes:
                 self.handle_pipe(pipe, dt)
-                if pipe.collision(player_rect):
+                if pipe.collision(agent_rect):
                     self.stop_game()
 
-        print(f"x:{self.player.rect.x - self.pipes[0].rectangle_middle.x} y:{self.player.rect.y - self.pipes[0].rectangle_middle.y}")
-        self.player.update(events, dt)
+        print(f"x:{self.agent.rect.x - self.pipes[0].rectangle_middle.x} y:{self.agent.rect.y - self.pipes[0].rectangle_middle.y}")
+        self.agent.update(events, dt)
 
-        if self.is_out_of_map(player_rect):
+        if self.is_out_of_map(agent_rect):
             self.stop_game()
 
     def draw(self, surf: pygame.Surface):
@@ -74,7 +74,7 @@ class Game(Menu):
             i.draw(surf)
 
         self.display_next_goal(surf)
-        self.player.draw(surf)
+        self.agent.draw(surf)
 
         # generate score image
         w, h = self.numbers[0].get_size()
@@ -85,8 +85,8 @@ class Game(Menu):
         else:
             surf.blit(s, s.get_rect(center=(W // 2, 100)))
 
-    def is_out_of_map(self, player_rect) -> bool:
-        return player_rect.top < 0 or player_rect.bottom > H - 50
+    def is_out_of_map(self, agent_rect) -> bool:
+        return agent_rect.top < 0 or agent_rect.bottom > H - 50
 
     def handle_speed(self, dt):
         self.original_speed += 0.0005 * dt
@@ -102,20 +102,18 @@ class Game(Menu):
         if self.ground_offset < -self.ground_img.get_width():
             self.ground_offset = 0
 
-
     def handle_pipe(self, i, dt):
         i.move(self.speed, dt)
-        # if i.x < self.player.x - 100:
+        # if i.x < self.agent.x - 100:
         #     if not i.scored:
         #         self.score += 1
         #         i.scored = True
         # if i.x < -i.image.get_width():
-        if i.x < self.player.x - round(i.x):
+        if i.x < self.agent.x - round(i.x):
             i.visible = False
             if not i.scored:
                 self.score += 1
                 i.scored = True
-
 
     def display_next_goal(self, surf):
         self.pipes[0].draw(surf, True)

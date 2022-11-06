@@ -1,6 +1,4 @@
 import pickle
-import pprint
-import random
 import time
 
 from constant import *

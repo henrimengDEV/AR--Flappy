@@ -1,12 +1,15 @@
+from menu import *
+from agent import Agent
+import random
+
+from IEntity import IEntity
 from config import *
-from menu_manager import MenuManager
-from objects import Player, Pipe
 
 
 class Game:
     def __init__(self, manager: 'MenuManager'):
         super().__init__('game', manager)
-        self.player = Player()
+        self.agent = Agent()
         self.manager = manager
         self.bg = load_image(os.path.join(IMAGES, 'bg.png'))
         self.ground_img = load_image(os.path.join(IMAGES, 'base.png'))
@@ -39,7 +42,7 @@ class Game:
         self.manager.switch_mode('game', reset=True)
 
     def update(self, events: list[pygame.event.Event], dt):
-        player_rect = self.player.rect
+        agent_rect = self.agent.rect
         self.pipes = [i for i in self.pipes if i.visible]
 
         if not self.stopped:
@@ -48,12 +51,12 @@ class Game:
 
             for pipe in self.pipes:
                 self.handle_pipe(pipe, dt)
-                if pipe.collision(player_rect):
+                if pipe.collision(agent_rect):
                     self.stop_game()
 
-        self.player.update(events, dt)
+        self.agent.update(events, dt)
 
-        if self.is_out_of_map(player_rect):
+        if self.is_out_of_map(agent_rect):
             self.stop_game()
 
     def draw(self, surf: pygame.Surface):
@@ -64,7 +67,7 @@ class Game:
             i.draw(surf)
 
         self.display_next_goal(surf)
-        self.player.draw(surf)
+        self.agent.draw(surf)
 
         # generate score image
         w, h = self.numbers[0].get_size()
@@ -75,8 +78,8 @@ class Game:
         else:
             surf.blit(s, s.get_rect(center=(W // 2, 100)))
 
-    def is_out_of_map(self, player_rect) -> bool:
-        return player_rect.top < 0 or player_rect.bottom > H - 50
+    def is_out_of_map(self, agent_rect) -> bool:
+        return agent_rect.top < 0 or agent_rect.bottom > H - 50
 
     def handle_speed(self, dt):
         self.original_speed += 0.0005 * dt
@@ -95,12 +98,12 @@ class Game:
 
     def handle_pipe(self, i, dt):
         i.move(self.speed, dt)
-        # if i.x < self.player.x - 100:
+        # if i.x < self.agent.x - 100:
         #     if not i.scored:
         #         self.score += 1
         #         i.scored = True
         # if i.x < -i.image.get_width():
-        if i.x < self.player.x - round(i.x):
+        if i.x < self.agent.x - round(i.x):
             i.visible = False
             if not i.scored:
                 self.score += 1
@@ -109,3 +112,56 @@ class Game:
 
     def display_next_goal(self, surf):
         self.pipes[0].draw(surf, True)
+
+
+class Pipe(IEntity):
+    """
+    This class contains the pipe object which is itself a collection of 2 pipes
+    inverted w.r.t each other
+    """
+
+    def __init__(self, x=W // 2, y=H - 50 - 320):
+        self.x = x
+        self.y = y
+        self.image = load_image(os.path.join(IMAGES, 'pipe-green.png'))
+        self.gap = 150
+        self.w, self.h = self.image.get_size()
+        self.h1 = random.randint(100, self.h - 50)
+        self.h2 = H - self.h1 - 50 - self.gap
+
+        self.surf1 = pygame.transform.rotate(self.image.subsurface((0, 0, self.w, self.h1)), 180)
+        self.surf2 = self.image.subsurface((0, 0, self.w, self.h2))
+
+        self.scored = False
+        self.visible = True
+
+    @property
+    def rectangle_top(self):
+        return pygame.Rect(round(self.x), 0, self.w, self.h1)
+
+    @property
+    def rectangle_bot(self):
+        return pygame.Rect(round(self.x), self.rectangle_top.bottom + self.gap, self.w, self.h2)
+
+    @property
+    def rectangle_middle(self):
+        return pygame.Rect(round(self.x), self.rectangle_top.bottom, self.w, self.gap)
+
+    def move(self, speed, dt):
+        self.x -= speed * dt
+
+    def collision(self, rect: pygame.Rect):
+        if self.rectangle_top.inflate(-10, -10).colliderect(rect) or self.rectangle_bot.inflate(-10, -10).colliderect(rect):
+            return True
+        else:
+            return False
+
+    def draw(self, surf: pygame.Surface, is_next=False):
+        x = round(self.x)
+        surf.blit(self.surf1, (x, 0))
+        surf.blit(self.surf2, (x, self.rectangle_top.height + self.gap))
+        if not is_next:
+            return
+        pygame.draw.rect(surf, 'red', self.rectangle_middle)
+        # pygame.draw.rect(surf, 'red', self.rect1)
+        # pygame.draw.rect(surf, 'red', self.rect2)

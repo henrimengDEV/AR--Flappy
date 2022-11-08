@@ -46,7 +46,7 @@ class Environment:
                 else:
                     res += self.__states[state]
             res += '\n'
-        print(res)
+        # print(res)
 
     def is_death_state(self, state: tuple[int, int]):
         return state not in self.__states \

@@ -8,8 +8,8 @@ import pygame
 
 W, H = 960, 540
 
-FPS = 60
-TARGET_FPS = 60
+FPS = 160
+TARGET_FPS = 160
 
 ASSETS = 'assets'
 IMAGES = os.path.join(ASSETS, 'images')
@@ -17,6 +17,10 @@ SOUNDS = os.path.join(ASSETS, 'sounds')
 
 SPEED = 3
 
+ACTION_FLAP = "FLAP"
+ACTION_NOTHING = "NOTHING"
+ACTIONS = [ACTION_NOTHING, ACTION_FLAP]
+FILE_QTABLE = 'qtable.dat'
 
 # below are some utility functions
 

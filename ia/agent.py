@@ -1,5 +1,4 @@
 import pickle
-import pprint
 import random
 import time
 
@@ -39,7 +38,7 @@ class Agent:
                 if self.__env.is_death_state(self.state):
                     break
                 self.__env.print(self)
-                time.sleep(1)
+                # time.sleep(1)
             print(f"score: {self.__score}")
             self.reset()
 
@@ -54,8 +53,20 @@ class Agent:
         # print(f"action: {action} state:{self.__state} score:{self.__score} qtable:{self.__qtable[self.state][action]}")
 
     def best_action(self):
-        actions = self.__qtable[self.__state]
-        return max(actions, key=actions.get)
+        # Set the percent you want to explore
+        epsilon = 0.2
+
+        if random.uniform(0, 1) < epsilon:
+            """
+            Explore: select a random action
+            """
+            return random.choice(ACTIONS)
+        else:
+            """
+            Exploit: select the action with max value (future reward)
+            """
+            actions = self.__qtable[self.__state]
+            return max(actions, key=actions.get)
 
     def save(self, filename):
         with open(filename, 'wb') as file:

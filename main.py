@@ -1,5 +1,7 @@
 import sys
 
+import pygame.display
+
 from menu import *
 
 pygame.init()
@@ -7,43 +9,39 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((W, H))
 
 
-def main_game():
-    dt = 1  # assuming ratio is 1 initially
-
-    menu_manager = MenuManager()
+def main_game(menu_manager):
+    dt = 1
+    i = 0
+    if os.path.exists(FILE_QTABLE):
+        menu_manager.qtable = menu_manager.load(FILE_QTABLE)
+        print(menu_manager.qtable)
 
     while True:
+        i += 1
         events = pygame.event.get()
-        set_up_windows(events)
 
-
-        # general display blits
-        screen.fill('black')
-
-        menu_manager.update(events, dt)
-        menu_manager.draw(screen)
-
-        # display update and dt update
-        pygame.display.update()
-        dt = TARGET_FPS * clock.tick(FPS) / 1000  # ratio of target to current FPS
-        # dt = round(dt, 6)
-        # print(clock.get_fps())
-        # dt = 1
-        if dt == 0:
-            dt = 1
-
-        # time.sleep(2)
-
-
-def set_up_windows(events):
-    for e in events:
-        if e.type == pygame.QUIT:
-            return
+        for e in events:
+            if e.type == pygame.QUIT:
+                return
         if e.type == pygame.KEYDOWN:
             if e.key == pygame.K_ESCAPE:
                 return
 
+        screen.fill('black')
+        menu_manager.step(events, dt)
+        menu_manager.draw(screen)
+
+        pygame.display.update()
+        dt = TARGET_FPS * clock.tick(FPS) / 1000
+        if dt == 0:
+            dt = 1
+
+        print(f"Tentative: {i} score: {menu_manager.menu.score}")
+
+
 if __name__ == '__main__':
-    main_game()
+    menu_manager = MenuManager()
+    main_game(menu_manager)
+    menu_manager.save(FILE_QTABLE)
     pygame.quit()
     sys.exit(0)

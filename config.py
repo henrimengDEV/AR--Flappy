@@ -8,8 +8,8 @@ import pygame
 
 W, H = 960, 540
 
-FPS = 160
-TARGET_FPS = 160
+FPS = 250
+TARGET_FPS = 250
 
 ASSETS = 'assets'
 IMAGES = os.path.join(ASSETS, 'images')

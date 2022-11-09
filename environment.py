@@ -55,7 +55,7 @@ class Environment:
                 self.player.learn(-1000)
                 self.stop_game()
 
-            self.player.step(events, dt, (self.horizontal_distance_from_next_pipe(), self.vertical_distance_from_next_pipe()))
+            self.player.step(events, dt, (self.x_distance_from_next_pipe(), self.y_distance_from_next_pipe()))
             self.player.learn(+1)
 
     def draw(self, surf: pygame.Surface):
@@ -89,15 +89,14 @@ class Environment:
             if not i.scored:
                 self.score += 1
                 i.scored = True
-                self.player.learn(+10000)
 
     def display_next_goal(self, surf):
         self.pipes[0].draw(surf, True)
 
-    def horizontal_distance_from_next_pipe(self):
+    def y_distance_from_next_pipe(self):
         return round((self.player.rect.y - self.pipes[0].rectangle_middle.y - 150 / 2) / 50)
 
-    def vertical_distance_from_next_pipe(self):
+    def x_distance_from_next_pipe(self):
         return round((self.player.rect.x - self.pipes[0].rectangle_middle.x) / 50)
 
     def default_surface(self, surf):
@@ -118,8 +117,8 @@ class Environment:
 
     def display_info_position(self, surf: pygame.Surface):
         font = pygame.font.SysFont(None, 24)
-        pos_x = font.render(f"x: {self.vertical_distance_from_next_pipe()}", True, pygame.Color('white'))
-        pos_y = font.render(f"y: {self.horizontal_distance_from_next_pipe()}", True, pygame.Color('white'))
+        pos_x = font.render(f"x: {self.x_distance_from_next_pipe()}", True, pygame.Color('white'))
+        pos_y = font.render(f"y: {self.y_distance_from_next_pipe()}", True, pygame.Color('white'))
         last_action = font.render(f"action: {self.player.last_action}", True, pygame.Color('white'))
         reward = font.render(f"reward: {self.player.last_reward}", True, pygame.Color('white'))
         surf.blit(pos_x, (20, 20))

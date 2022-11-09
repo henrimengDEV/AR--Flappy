@@ -12,9 +12,9 @@ screen = pygame.display.set_mode((W, H))
 def main_game(menu_manager):
     dt = 1
     i = 0
+    best_score = 0
     if os.path.exists(FILE_QTABLE):
-        menu_manager.qtable = menu_manager.load(FILE_QTABLE)
-        print(menu_manager.qtable)
+        menu_manager.load(FILE_QTABLE)
 
     while True:
         i += 1
@@ -36,12 +36,15 @@ def main_game(menu_manager):
         if dt == 0:
             dt = 1
 
-        print(f"Tentative: {i} score: {menu_manager.menu.score}")
+        if best_score < menu_manager.menu.score:
+            best_score = menu_manager.menu.score
+
+        print(f"Tentative: {i} score: {menu_manager.menu.score} best_score: {best_score}")
 
 
 if __name__ == '__main__':
     menu_manager = MenuManager()
     main_game(menu_manager)
-    menu_manager.save(FILE_QTABLE)
+    # menu_manager.save(FILE_QTABLE)
     pygame.quit()
     sys.exit(0)

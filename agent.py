@@ -6,7 +6,7 @@ from config import *
 
 
 class Player:
-    def __init__(self, qtable, alpha=0.7, gamma=1):
+    def __init__(self, qtable, alpha=0.4, gamma=1):
         self.x = 150
         self.y = H // 2
         self.images = [load_image(os.path.join(IMAGES, f'bird{i + 1}.png')) for i in range(3)]
@@ -23,7 +23,7 @@ class Player:
         self.alpha = alpha
         self.gamma = gamma
 
-    def step(self, events: list[pygame.event.Event], dt, state: tuple[int, int]):
+    def step(self, events: list[pygame.event.Event], dt, state: tuple[int, int, int]):
         if not self.stopped:
             if time.time() - self.timer > 0.1:
                 self.timer = time.time()
@@ -57,7 +57,7 @@ class Player:
 
     def best_action(self, state: tuple[int, int]):
         actions = self.q_table[(round(state[0]), round(state[1]))]
-        epsilon = 0.2
+        epsilon = 0
 
         if random.uniform(0, 1) < epsilon:
             """

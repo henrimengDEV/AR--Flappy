@@ -12,7 +12,7 @@ W, H = 960, 540
 
 FPS = 160
 TARGET_FPS = 160
-EPSILON = 0.1
+EPSILON = 0.1618
 
 ASSETS = 'assets'
 IMAGES = os.path.join(ASSETS, 'images')

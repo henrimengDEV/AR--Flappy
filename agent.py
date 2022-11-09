@@ -60,7 +60,6 @@ class Player:
 
     def best_action(self, state: tuple[int, int]):
         actions = qtbl.qtable[(round(state[0]), round(state[1]))]
-        config.epsilon = 0.1
         if pygame.key.get_pressed()[pygame.K_UP]:
             config.EPSILON += 0.001
             print(config.EPSILON)

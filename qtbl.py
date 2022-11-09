@@ -18,8 +18,8 @@ def init_qtable():
     result = {}
     states = {}
 
-    for x in range(0, 256):
-        for y in range(0, 256):
+    for x in range(-256, 512):
+        for y in range(-256, 512):
             states[(x, y)] = 0
 
     for state in states:

@@ -53,6 +53,10 @@ class Environment:
                 self.player.learn(-1000)
                 self.stop_game()
 
+            if self.score > 0 and self.score % 5 == 0:
+                self.player.learn(10)
+
+
             #if player_rect.y == self.pipes[0].rectangle_middle.y + 100:
                 #self.player.learn(1)
 
@@ -101,16 +105,19 @@ class Environment:
         return round((self.player.rect.x - self.pipes[0].rectangle_middle.x) / 50)
 
     def horizontal_distance_from_next_pipe_clamp(self):
-        return clamp(round(self.pipes[0].rectangle_middle.x), 0, 255)
+        if clamp(round(self.pipes[0].rectangle_middle.x), -255, 511) > 55:
+            return clamp(round(self.pipes[0].rectangle_middle.x), -255, 511)
+        else:
+            return clamp(round(self.pipes[1].rectangle_middle.x), -255, 511)
 
     def vertical_top_distance_from_next_pipe_clamp(self):
-        return clamp(round(self.player.rect.y - self.pipes[0].rectangle_top.bottom), 0, 255)
+        return clamp(round(self.player.rect.y - self.pipes[0].rectangle_top.bottom), -255, 511)
 
     def vertical_bot_distance_from_next_pipe_clamp(self):
-        return clamp(self.pipes[0].rectangle_bot.y - self.player.rect.y, 0, 255)
+        return clamp(self.pipes[0].rectangle_bot.y - self.player.rect.y, -255, 511)
 
     def vertical_middle_distance_from_next_pipe_clamp(self):
-        return clamp(round(self.player.rect.y - self.pipes[0].rectangle_middle.y), 0, 255)
+        return clamp(round(self.player.rect.y - self.pipes[0].rectangle_middle.y), -255, 511)
 
     def default_surface(self, surf):
         surf.blit(self.bg, (0, 0))

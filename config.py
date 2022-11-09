@@ -15,6 +15,7 @@ TARGET_FPS = 60
 EPSILON = 0.1
 ITERATION = 1
 ALPHA = 0.7
+BEST_SCORE = 0
 
 ASSETS = 'assets'
 IMAGES = os.path.join(ASSETS, 'images')

@@ -14,7 +14,6 @@ from qtbl import *
 class Environment:
     def __init__(self, manager):
         self.spawn_i = 0
-        self.best_score = 0
         self.i = 0
         self.manager = manager
         self.player = Player(config.ALPHA)
@@ -51,7 +50,8 @@ class Environment:
             config.EPSILON -= 0.001
         if config.ALPHA > 0.1:
             config.ALPHA -= 0.00003
-        print(F"ITERATION = {config.ITERATION}")
+        if self.score > config.BEST_SCORE:
+            config.BEST_SCORE = self.score
         self.manager.switch_mode('game', reset=True)
 
     def step(self, events: list[pygame.event.Event], dt, clock):
@@ -126,10 +126,10 @@ class Environment:
         return round((self.player.rect.x - self.pipes[0].rectangle_middle.x) / 50)
 
     def horizontal_distance_from_next_pipe_clamp(self):
-        #if clamp(self.pipes[0].rectangle_middle.x / self.deltaRadar, -127, 255) > 1.88:
+        #if clamp(self.pipes[0].rectangle_middle.x / self.deltaRadarX, -127, 255) > 1.618:
         return clamp(math.ceil(self.pipes[0].rectangle_middle.x / self.deltaRadarX), -127, 255)
         #else:
-            #return clamp(math.ceil(self.pipes[1].rectangle_middle.x / self.deltaRadar), -127, 255)
+            #return clamp(math.ceil(self.pipes[1].rectangle_middle.x / self.deltaRadarX), -127, 255)
 
     def vertical_top_distance_from_next_pipe_clamp(self):
         return clamp(math.ceil((self.player.rect.y - self.pipes[0].rectangle_top.bottom) / self.deltaRadarY), -127, 255)
@@ -161,6 +161,7 @@ class Environment:
 
     def display_info_position(self, surf: pygame.Surface):
         font = pygame.font.SysFont(None, 24)
+        best_score = font.render(f"{config.BEST_SCORE}", True, pygame.Color('red'))
         iterations = font.render(f"Iteration: {config.ITERATION}", True, pygame.Color('white'))
         pos_x = font.render(f"x: {self.horizontal_distance_from_next_pipe_clamp()}", True, pygame.Color('white'))
         pos_delta_y = font.render(f"delta_y: {self.vertical_delta_distance_from_next_pipe_clamp()}", True, pygame.Color('white'))
@@ -169,6 +170,7 @@ class Environment:
         reward = font.render(f"reward: {self.player.last_reward}", True, pygame.Color('white'))
         epsilon = font.render(f"randomness: {config.EPSILON}", True, pygame.Color('white'))
         surf.blit(iterations, ((W / 2) - 33, 20))
+        surf.blit(best_score, ((W / 2) - 10, 55))
         surf.blit(pos_x, (20, 20))
         surf.blit(pos_delta_y, (20, 40))
         surf.blit(pos_y_bot, (20, 60))

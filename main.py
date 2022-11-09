@@ -29,11 +29,11 @@ def main_game(menu_manager):
                 return
 
         screen.fill('black')
-        menu_manager.step(events, dt)
+        menu_manager.step(events, dt, clock)
         menu_manager.draw(screen)
 
         pygame.display.update()
-        dt = TARGET_FPS * clock.tick(FPS) / 1000
+        dt = TARGET_FPS * clock.tick(FPS/3) / 1000
         if dt == 0:
             dt = 1
 

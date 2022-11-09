@@ -4,10 +4,10 @@ import random
 
 from config import ACTIONS, FILE_QTABLE
 
-from environment import Environment
 
 
 global qtable
+global is_init
 
 
 def init_qtable():
@@ -18,9 +18,10 @@ def init_qtable():
     result = {}
     states = {}
 
-    for x in range(-256, 512):
-        for y in range(-256, 512):
-            states[(x, y)] = 0
+    for x in range(-64, 64):
+        for y in range(-64, 64):
+            for z in range(-64, 64):
+                states[(x, y, z)] = 0
 
     for state in states:
         result[state] = {}
@@ -28,6 +29,8 @@ def init_qtable():
             result[state][action] = 0
 
     global qtable
+    global is_init
+    is_init = False
     qtable = result
 
 

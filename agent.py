@@ -1,6 +1,9 @@
+import math
 import pprint
 import random
 import time
+
+from pygame.time import Clock
 
 import config
 import qtbl
@@ -9,8 +12,9 @@ from qtbl import *
 
 
 class Player:
-    def __init__(self, alpha=0.1, gamma=1):
-        self.x = 150
+    def __init__(self, alpha, gamma=0.95):
+        self.first_action = True
+        self.x = 200
         self.y = H // 2
         self.images = [load_image(os.path.join(IMAGES, f'bird{i + 1}.png')) for i in range(3)]
         self.c = 0
@@ -25,7 +29,7 @@ class Player:
         self.alpha = alpha
         self.gamma = gamma
 
-    def step(self, events: list[pygame.event.Event], dt, state: tuple[int, int]):
+    def step(self, events: list[pygame.event.Event], dt, state: tuple[int, int, int], clock: Clock):
         if not self.stopped:
             if time.time() - self.timer > 0.1:
                 self.timer = time.time()
@@ -41,10 +45,14 @@ class Player:
         if not self.stopped:
             # if pygame.key.get_pressed()[pygame.K_UP] or pygame.mouse.get_pressed(num_buttons=3)[0]:
             #     self.dy = -5
+
             self.last_action = self.best_action(state)
-            self.last_state = (round(state[0]), round(state[1]))
+            self.last_state = (math.ceil(state[0]), math.ceil(state[1]), math.ceil(state[2]))
             if self.last_action == ACTION_FLAP:
-                self.dy = -2
+                self.dy = -3
+
+
+
         self.rot = clamp(self.rot, -45, 25)
         self.y = clamp(self.y, 0, H - 50)
 
@@ -58,8 +66,8 @@ class Player:
         qtbl.qtable[self.last_state][self.last_action] = self.alpha * (reward + self.gamma * max_q - qtbl.qtable[self.last_state][self.last_action])
         self.last_reward = reward
 
-    def best_action(self, state: tuple[int, int]):
-        actions = qtbl.qtable[(round(state[0]), round(state[1]))]
+    def best_action(self, state: tuple[int, int, int]):
+        actions = qtbl.qtable[(math.ceil(state[0]), math.ceil(state[1]), math.ceil(state[2]))]
         if pygame.key.get_pressed()[pygame.K_UP]:
             config.EPSILON += 0.001
             print(config.EPSILON)
@@ -68,14 +76,11 @@ class Player:
             print(config.EPSILON)
         print(actions)
 
-        if actions["NOTHING"] == actions["FLAP"]:
+        if random.uniform(0, 1) < config.EPSILON:
             """
             Explore: select a random action
             """
-            if random.uniform(0, 1) < config.EPSILON:
-                return ACTION_FLAP
-            else:
-                return ACTION_NOTHING
+            return random.choice(ACTIONS)
         else:
             """
             Exploit: select the action with max value (future reward)

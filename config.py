@@ -10,9 +10,11 @@ import pygame
 
 W, H = 960, 540
 
-FPS = 160
-TARGET_FPS = 160
-EPSILON = 0.1618
+FPS = 60
+TARGET_FPS = 60
+EPSILON = 0.1
+ITERATION = 1
+ALPHA = 0.7
 
 ASSETS = 'assets'
 IMAGES = os.path.join(ASSETS, 'images')

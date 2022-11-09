@@ -20,8 +20,8 @@ class MenuManager:
         if reset:
             self.menu = Environment(self)
 
-    def step(self, events: list[pygame.event.Event], dt):
-        self.menu.step(events, dt)
+    def step(self, events: list[pygame.event.Event], dt, clock):
+        self.menu.step(events, dt, clock)
 
     def draw(self, surf: pygame.Surface):
         self.menu.draw(surf)

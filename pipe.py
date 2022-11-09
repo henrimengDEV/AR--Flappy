@@ -15,7 +15,7 @@ class Pipe:
         self.image = load_image(os.path.join(IMAGES, 'pipe-green.png'))
         self.gap = 200
         self.w, self.h = self.image.get_size()
-        self.h1 = self.h - 150
+        self.h1 = random.randint(100, self.h - 50)
         self.h2 = H - self.h1 - 50 - self.gap
 
         self.surf1 = pygame.transform.rotate(self.image.subsurface((0, 0, self.w, self.h1)), 180)

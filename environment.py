@@ -31,7 +31,15 @@ class Environment:
         self.font = pygame.font.Font(os.path.join(ASSETS, 'flappy bird font.ttf'), 20)
         self.pipe_spawner = 0
         self.pipe_spawn_distances = {
-            2: 250,
+            2: 200,
+            3: 225,
+            4: 250,
+            5: 250,
+            6: 275,
+            7: 275,
+            8: 275,
+            9: 300,
+            10: 300
         }
         self.original_speed = self.speed
         self.deltaRadarX = 100
@@ -93,10 +101,9 @@ class Environment:
     def handle_map(self, dt):
         self.ground_offset -= self.speed * dt
         self.pipe_spawner -= self.speed * dt
-        if self.pipe_spawner < -self.pipe_spawn_distances[2]:
+        if self.pipe_spawner < -self.pipe_spawn_distances[round(self.speed)]:
             self.pipe_spawner = 0
-            self.pipes.append(Pipe(self.pipes[-1].x + self.pipe_spawn_distances[2]))
-            self.spawn_i += 1
+            self.pipes.append(Pipe(self.pipes[-1].x + self.pipe_spawn_distances[round(self.speed)]))
         if self.ground_offset < -self.ground_img.get_width():
             self.ground_offset = 0
 

@@ -1,14 +1,19 @@
+import pickle
+
 import pygame
 
+import config
 from agent import Player
 from config import *
 from pipe import Pipe
 
 
 class Environment:
-    def __init__(self, manager, qtable):
+    def __init__(self, manager):
+        self.best_score = 0
+        self.i = 0
         self.manager = manager
-        self.player = Player(qtable)
+        self.player = Player()
         self.bg = load_image(os.path.join(IMAGES, 'bg.png'))
         self.ground_img = load_image(os.path.join(IMAGES, 'base.png'))
         self.show_score = False
@@ -22,17 +27,10 @@ class Environment:
         self.font = pygame.font.Font(os.path.join(ASSETS, 'flappy bird font.ttf'), 20)
         self.pipe_spawner = 0
         self.pipe_spawn_distances = {
-            2: 200,
-            3: 225,
-            4: 250,
-            5: 250,
-            6: 275,
-            7: 275,
-            8: 275,
-            9: 300,
-            10: 300
+            1: 250,
         }
         self.original_speed = self.speed
+
 
     def stop_game(self):
         self.manager.switch_mode('game', reset=True)
@@ -55,8 +53,10 @@ class Environment:
                 self.player.learn(-1000)
                 self.stop_game()
 
-            self.player.step(events, dt, (self.horizontal_distance_from_next_pipe(), self.vertical_distance_from_next_pipe()))
-            self.player.learn(+1)
+            #if player_rect.y == self.pipes[0].rectangle_middle.y + 100:
+                #self.player.learn(1)
+
+            self.player.step(events, dt, (self.horizontal_distance_from_next_pipe_clamp(), self.vertical_bot_distance_from_next_pipe_clamp()))
 
     def draw(self, surf: pygame.Surface):
         self.default_surface(surf)
@@ -76,9 +76,9 @@ class Environment:
     def handle_map(self, dt):
         self.ground_offset -= self.speed * dt
         self.pipe_spawner -= self.speed * dt
-        if self.pipe_spawner < -self.pipe_spawn_distances[round(self.speed)]:
+        if self.pipe_spawner < -self.pipe_spawn_distances[1]:
             self.pipe_spawner = 0
-            self.pipes.append(Pipe(self.pipes[-1].x + self.pipe_spawn_distances[round(self.speed)]))
+            self.pipes.append(Pipe(self.pipes[-1].x + self.pipe_spawn_distances[1]))
         if self.ground_offset < -self.ground_img.get_width():
             self.ground_offset = 0
 
@@ -89,7 +89,7 @@ class Environment:
             if not i.scored:
                 self.score += 1
                 i.scored = True
-                self.player.learn(+10000)
+                self.player.learn(+1)
 
     def display_next_goal(self, surf):
         self.pipes[0].draw(surf, True)
@@ -99,6 +99,18 @@ class Environment:
 
     def vertical_distance_from_next_pipe(self):
         return round((self.player.rect.x - self.pipes[0].rectangle_middle.x) / 50)
+
+    def horizontal_distance_from_next_pipe_clamp(self):
+        return clamp(round(self.pipes[0].rectangle_middle.x), 0, 511)
+
+    def vertical_top_distance_from_next_pipe_clamp(self):
+        return clamp(round(self.player.rect.y - self.pipes[0].rectangle_top.bottom), 0, 511)
+
+    def vertical_bot_distance_from_next_pipe_clamp(self):
+        return clamp(self.pipes[0].rectangle_bot.y - self.player.rect.y, 0, 511)
+
+    def vertical_middle_distance_from_next_pipe_clamp(self):
+        return clamp(round(self.player.rect.y - self.pipes[0].rectangle_middle.y), 0, 511)
 
     def default_surface(self, surf):
         surf.blit(self.bg, (0, 0))
@@ -118,11 +130,13 @@ class Environment:
 
     def display_info_position(self, surf: pygame.Surface):
         font = pygame.font.SysFont(None, 24)
-        pos_x = font.render(f"x: {self.vertical_distance_from_next_pipe()}", True, pygame.Color('white'))
-        pos_y = font.render(f"y: {self.horizontal_distance_from_next_pipe()}", True, pygame.Color('white'))
+        pos_x = font.render(f"x: {self.horizontal_distance_from_next_pipe_clamp()}", True, pygame.Color('white'))
+        pos_y = font.render(f"y: {self.vertical_bot_distance_from_next_pipe_clamp()}", True, pygame.Color('white'))
         last_action = font.render(f"action: {self.player.last_action}", True, pygame.Color('white'))
         reward = font.render(f"reward: {self.player.last_reward}", True, pygame.Color('white'))
+        epsilon = font.render(f"reward: {config.EPSILON}", True, pygame.Color('white'))
         surf.blit(pos_x, (20, 20))
         surf.blit(pos_y, (20, 40))
         surf.blit(last_action, (20, 60))
         surf.blit(reward, (20, 80))
+        surf.blit(epsilon, (20, 100))

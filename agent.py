@@ -2,11 +2,14 @@ import pprint
 import random
 import time
 
+import config
+import qtbl
 from config import *
+from qtbl import *
 
 
 class Player:
-    def __init__(self, qtable, alpha=0.7, gamma=1):
+    def __init__(self, alpha=0.7, gamma=1):
         self.x = 150
         self.y = H // 2
         self.images = [load_image(os.path.join(IMAGES, f'bird{i + 1}.png')) for i in range(3)]
@@ -15,7 +18,6 @@ class Player:
         self.dy = 0
         self.rot = 45
         self.stopped = False
-        self.q_table = qtable
         self.last_state = None
         self.last_reward = 0
         self.last_action = None
@@ -42,7 +44,7 @@ class Player:
             self.last_action = self.best_action(state)
             self.last_state = (round(state[0]), round(state[1]))
             if self.last_action == ACTION_FLAP:
-                self.dy = -5
+                self.dy = -2
         self.rot = clamp(self.rot, -45, 25)
         self.y = clamp(self.y, 0, H - 50)
 
@@ -51,19 +53,30 @@ class Player:
         pygame.draw.rect(surf, 'red', self.rect, 5)
 
     def learn(self, reward):
-        max_q = max(self.q_table[self.last_state].values())
-        self.q_table[self.last_state][self.last_action] = self.alpha * (reward + self.gamma * max_q - self.q_table[self.last_state][self.last_action])
+
+        max_q = max(qtbl.qtable[self.last_state].values())
+        qtbl.qtable[self.last_state][self.last_action] = self.alpha * (reward + self.gamma * max_q - qtbl.qtable[self.last_state][self.last_action])
         self.last_reward = reward
 
     def best_action(self, state: tuple[int, int]):
-        actions = self.q_table[(round(state[0]), round(state[1]))]
-        epsilon = 0.2
+        actions = qtbl.qtable[(round(state[0]), round(state[1]))]
+        config.epsilon = 0.1
+        if pygame.key.get_pressed()[pygame.K_UP]:
+            config.EPSILON += 0.001
+            print(config.EPSILON)
+        if pygame.key.get_pressed()[pygame.K_DOWN]:
+            config.EPSILON -= 0.001
+            print(config.EPSILON)
+        print(actions)
 
-        if random.uniform(0, 1) < epsilon:
+        if actions["NOTHING"] == actions["FLAP"]:
             """
             Explore: select a random action
             """
-            return random.choice(ACTIONS)
+            if random.uniform(0, 1) < config.EPSILON:
+                return ACTION_FLAP
+            else:
+                return ACTION_NOTHING
         else:
             """
             Exploit: select the action with max value (future reward)

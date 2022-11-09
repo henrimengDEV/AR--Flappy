@@ -4,12 +4,15 @@ Here we will need to alias pygame from kengi.pygame
 """
 
 import os
+import pickle
+
 import pygame
 
 W, H = 960, 540
 
 FPS = 160
 TARGET_FPS = 160
+EPSILON = 0.1
 
 ASSETS = 'assets'
 IMAGES = os.path.join(ASSETS, 'images')

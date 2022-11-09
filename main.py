@@ -2,7 +2,11 @@ import sys
 
 import pygame.display
 
+import config
+import ia
+import qtbl
 from menu import *
+from qtbl import *
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -12,9 +16,6 @@ screen = pygame.display.set_mode((W, H))
 def main_game(menu_manager):
     dt = 1
     i = 0
-    if os.path.exists(FILE_QTABLE):
-        menu_manager.qtable = menu_manager.load(FILE_QTABLE)
-        print(menu_manager.qtable)
 
     while True:
         i += 1
@@ -36,12 +37,13 @@ def main_game(menu_manager):
         if dt == 0:
             dt = 1
 
-        print(f"Tentative: {i} score: {menu_manager.menu.score}")
+       # print(f"Tentative: {i} score: {menu_manager.menu.score}")
 
 
 if __name__ == '__main__':
+    qtbl.init_qtable()
     menu_manager = MenuManager()
     main_game(menu_manager)
-    menu_manager.save(FILE_QTABLE)
+    qtbl.save(FILE_QTABLE)
     pygame.quit()
     sys.exit(0)

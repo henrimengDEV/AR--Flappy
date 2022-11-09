@@ -41,15 +41,16 @@ class Environment:
             10: 300
         }
         self.original_speed = self.speed
-        self.deltaRadarX = 100
+        self.deltaRadarX = 64
         self.deltaRadarY = 100
 
     def stop_game(self):
         config.ITERATION += 1
         if config.EPSILON > 0:
-            config.EPSILON -= 0.001
+            config.EPSILON -= 0.0001
         if config.ALPHA > 0.1:
-            config.ALPHA -= 0.00003
+            config.ALPHA -= 0.0003
+        print(config.ALPHA)
         if self.score > config.BEST_SCORE:
             config.BEST_SCORE = self.score
         self.manager.switch_mode('game', reset=True)

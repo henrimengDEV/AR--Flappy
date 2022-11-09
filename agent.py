@@ -9,7 +9,7 @@ from qtbl import *
 
 
 class Player:
-    def __init__(self, alpha=0.7, gamma=1):
+    def __init__(self, alpha=0.1, gamma=1):
         self.x = 150
         self.y = H // 2
         self.images = [load_image(os.path.join(IMAGES, f'bird{i + 1}.png')) for i in range(3)]

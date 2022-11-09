@@ -101,16 +101,16 @@ class Environment:
         return round((self.player.rect.x - self.pipes[0].rectangle_middle.x) / 50)
 
     def horizontal_distance_from_next_pipe_clamp(self):
-        return clamp(round(self.pipes[0].rectangle_middle.x), 0, 511)
+        return clamp(round(self.pipes[0].rectangle_middle.x), 0, 255)
 
     def vertical_top_distance_from_next_pipe_clamp(self):
-        return clamp(round(self.player.rect.y - self.pipes[0].rectangle_top.bottom), 0, 511)
+        return clamp(round(self.player.rect.y - self.pipes[0].rectangle_top.bottom), 0, 255)
 
     def vertical_bot_distance_from_next_pipe_clamp(self):
-        return clamp(self.pipes[0].rectangle_bot.y - self.player.rect.y, 0, 511)
+        return clamp(self.pipes[0].rectangle_bot.y - self.player.rect.y, 0, 255)
 
     def vertical_middle_distance_from_next_pipe_clamp(self):
-        return clamp(round(self.player.rect.y - self.pipes[0].rectangle_middle.y), 0, 511)
+        return clamp(round(self.player.rect.y - self.pipes[0].rectangle_middle.y), 0, 255)
 
     def default_surface(self, surf):
         surf.blit(self.bg, (0, 0))
@@ -134,7 +134,7 @@ class Environment:
         pos_y = font.render(f"y: {self.vertical_bot_distance_from_next_pipe_clamp()}", True, pygame.Color('white'))
         last_action = font.render(f"action: {self.player.last_action}", True, pygame.Color('white'))
         reward = font.render(f"reward: {self.player.last_reward}", True, pygame.Color('white'))
-        epsilon = font.render(f"reward: {config.EPSILON}", True, pygame.Color('white'))
+        epsilon = font.render(f"randomness: {config.EPSILON}", True, pygame.Color('white'))
         surf.blit(pos_x, (20, 20))
         surf.blit(pos_y, (20, 40))
         surf.blit(last_action, (20, 60))

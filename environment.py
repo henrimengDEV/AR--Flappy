@@ -105,7 +105,10 @@ class Environment:
     def handle_map(self, dt):
         self.ground_offset -= self.speed * dt
         self.pipe_spawner -= self.speed * dt
+        print(self.pipe_spawner)
+        print(self.ground_offset)
         if self.pipe_spawner <= -self.pipe_spawn_distances[round(self.speed)]:
+            print("SPAWN PIPE")
             self.pipe_spawner = 0
             self.pipes.append(Pipe(self.pipes[-1].x + self.pipe_spawn_distances[round(self.speed)]))
         if self.ground_offset < -self.ground_img.get_width():

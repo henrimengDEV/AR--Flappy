@@ -10,8 +10,8 @@ import pygame
 
 W, H = 960, 540
 
-FPS = 60
-TARGET_FPS = 60
+FPS = 90
+TARGET_FPS = 90
 EPSILON = 0.1
 ITERATION = 1
 ALPHA = 0.7

@@ -49,7 +49,7 @@ class Player:
             self.last_action = self.best_action(state)
             self.last_state = (math.ceil(state[0]), math.ceil(state[1]), math.ceil(state[2]))
             if self.last_action == ACTION_FLAP:
-                self.dy = -3
+                self.dy = -5
 
 
 

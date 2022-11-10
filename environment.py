@@ -41,15 +41,22 @@ class Environment:
             10: 300
         }
         self.original_speed = self.speed
-        self.deltaRadarX = 64
-        self.deltaRadarY = 100
+        self.deltaRadarX = 100
+        self.deltaRadarY = 89
 
     def stop_game(self):
         config.ITERATION += 1
-        if config.EPSILON > 0:
-            config.EPSILON -= 0.0001
-        if config.ALPHA > 0.1:
-            config.ALPHA -= 0.0003
+        if config.EPSILON > 0.01:
+            config.EPSILON -= 0.01
+        else:
+            config.EPSILON = 0
+
+        #if config.ITERATION > 50:
+            #if config.ALPHA > 0.114:
+                #config.ALPHA -= 0.012
+            #else:
+                #config.ALPHA = 0.1
+
         print(config.ALPHA)
         if self.score > config.BEST_SCORE:
             config.BEST_SCORE = self.score
@@ -82,7 +89,7 @@ class Environment:
             #if player_rect.y == self.pipes[0].rectangle_middle.y + 100:
                 #self.player.learn(1)
 
-            self.player.step(events, dt, (self.horizontal_distance_from_next_pipe_clamp(), self.vertical_bot_distance_from_next_pipe_clamp(), self.vertical_delta_distance_from_next_pipe_clamp()), clock)
+            self.player.step(events, dt, (self.horizontal_distance_from_next_pipe_clamp(), self.vertical_bot_distance_from_next_pipe_clamp(), self.vertical_top_distance_from_next_pipe_clamp()), clock)
 
     def draw(self, surf: pygame.Surface):
         self.default_surface(surf)
@@ -96,8 +103,9 @@ class Environment:
 
     def handle_speed(self, dt):
         self.original_speed += 0.0005 * dt
-        self.original_speed = clamp(self.original_speed, SPEED, 10)
+        self.original_speed = clamp(self.original_speed, SPEED, 6)
         self.speed = round(self.original_speed, 2)
+        print(self.speed)
 
     def handle_map(self, dt):
         self.ground_offset -= self.speed * dt
@@ -127,7 +135,7 @@ class Environment:
         return round((self.player.rect.x - self.pipes[0].rectangle_middle.x) / 50)
 
     def horizontal_distance_from_next_pipe_clamp(self):
-        #if clamp(self.pipes[0].rectangle_middle.x / self.deltaRadarX, -127, 255) > 1.618:
+        #if clamp(self.pipes[0].rectangle_middle.x / self.deltaRadarX, -127, 255) > 1:
         return clamp(math.ceil(self.pipes[0].rectangle_middle.x / self.deltaRadarX), -127, 255)
         #else:
             #return clamp(math.ceil(self.pipes[1].rectangle_middle.x / self.deltaRadarX), -127, 255)
@@ -165,11 +173,12 @@ class Environment:
         best_score = font.render(f"{config.BEST_SCORE}", True, pygame.Color('red'))
         iterations = font.render(f"Iteration: {config.ITERATION}", True, pygame.Color('white'))
         pos_x = font.render(f"x: {self.horizontal_distance_from_next_pipe_clamp()}", True, pygame.Color('white'))
-        pos_delta_y = font.render(f"delta_y: {self.vertical_delta_distance_from_next_pipe_clamp()}", True, pygame.Color('white'))
+        pos_delta_y = font.render(f"delta_y: {self.vertical_top_distance_from_next_pipe_clamp()}", True, pygame.Color('white'))
         pos_y_bot = font.render(f"y_bot: {self.vertical_bot_distance_from_next_pipe_clamp()}", True, pygame.Color('white'))
         last_action = font.render(f"action: {self.player.last_action}", True, pygame.Color('white'))
         reward = font.render(f"reward: {self.player.last_reward}", True, pygame.Color('white'))
         epsilon = font.render(f"randomness: {config.EPSILON}", True, pygame.Color('white'))
+        alpha = font.render(f"alpha: {config.ALPHA}", True, pygame.Color('white'))
         surf.blit(iterations, ((W / 2) - 33, 20))
         surf.blit(best_score, ((W / 2) - 10, 55))
         surf.blit(pos_x, (20, 20))
@@ -178,3 +187,4 @@ class Environment:
         surf.blit(last_action, (20, 80))
         surf.blit(reward, (20, 100))
         surf.blit(epsilon, (20, 120))
+        surf.blit(alpha, (20, 140))

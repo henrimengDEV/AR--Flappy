@@ -33,7 +33,7 @@ def main_game(menu_manager):
         menu_manager.draw(screen)
 
         pygame.display.update()
-        dt = TARGET_FPS * clock.tick(FPS/3) / 1000
+        dt = TARGET_FPS * clock.tick(FPS) / 1000
         if dt == 0:
             dt = 1
 

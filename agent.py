@@ -29,7 +29,7 @@ class Player:
         self.alpha = alpha
         self.gamma = gamma
 
-    def step(self, events: list[pygame.event.Event], dt, state: tuple[int, int, int, int], clock: Clock):
+    def step(self, events: list[pygame.event.Event], dt, state: tuple[int, int, int], clock: Clock):
         if not self.stopped:
             if time.time() - self.timer > 0.1:
                 self.timer = time.time()
@@ -47,7 +47,7 @@ class Player:
             #     self.dy = -5
 
             self.last_action = self.best_action(state)
-            self.last_state = (math.ceil(state[0]), math.ceil(state[1]), math.ceil(state[2]), math.ceil(state[3]))
+            self.last_state = (math.ceil(state[0]), math.ceil(state[1]), math.ceil(state[2]))
             if self.last_action == ACTION_FLAP:
                 self.dy = -5
 
@@ -66,8 +66,8 @@ class Player:
         qtbl.qtable[self.last_state][self.last_action] = self.alpha * (reward + self.gamma * max_q - qtbl.qtable[self.last_state][self.last_action])
         self.last_reward = reward
 
-    def best_action(self, state: tuple[int, int, int, int]):
-        actions = qtbl.qtable[(math.ceil(state[0]), math.ceil(state[1]), math.ceil(state[2]), math.ceil(state[3]))]
+    def best_action(self, state: tuple[int, int, int]):
+        actions = qtbl.qtable[(math.ceil(state[0]), math.ceil(state[1]), math.ceil(state[2]))]
         if pygame.key.get_pressed()[pygame.K_UP]:
             config.EPSILON += 0.001
             print(config.EPSILON)

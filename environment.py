@@ -1,10 +1,5 @@
 import math
-import pickle
 
-import pygame
-
-import config
-import qtbl
 from agent import Player
 from config import *
 from pipe import Pipe
@@ -42,7 +37,7 @@ class Environment:
         }
         self.original_speed = self.speed
         self.deltaRadarX = 100
-        self.deltaRadarY = 89
+        self.deltaRadarY = 100
 
     def stop_game(self):
         config.ITERATION += 1
@@ -51,11 +46,11 @@ class Environment:
         else:
             config.EPSILON = 0
 
-        #if config.ITERATION > 50:
-            #if config.ALPHA > 0.114:
-                #config.ALPHA -= 0.012
-            #else:
-                #config.ALPHA = 0.1
+        if config.ITERATION > 15:
+            if config.ALPHA > 0.132:
+                config.ALPHA -= 0.0316
+            else:
+                config.ALPHA = 0.1
 
         print(config.ALPHA)
         if self.score > config.BEST_SCORE:
@@ -89,7 +84,7 @@ class Environment:
             #if player_rect.y == self.pipes[0].rectangle_middle.y + 100:
                 #self.player.learn(1)
 
-            self.player.step(events, dt, (self.horizontal_distance_from_next_pipe_clamp(), self.vertical_bot_distance_from_next_pipe_clamp(), self.vertical_top_distance_from_next_pipe_clamp()), clock)
+            self.player.step(events, dt, (self.horizontal_distance_from_next_pipe_clamp(), self.vertical_bot_distance_from_next_pipe_clamp(), self.vertical_top_distance_from_next_pipe_clamp(), round(self.speed/10)), clock)
 
     def draw(self, surf: pygame.Surface):
         self.default_surface(surf)
@@ -103,7 +98,7 @@ class Environment:
 
     def handle_speed(self, dt):
         self.original_speed += 0.0005 * dt
-        self.original_speed = clamp(self.original_speed, SPEED, 6)
+        self.original_speed = clamp(self.original_speed, SPEED, 9)
         self.speed = round(self.original_speed, 2)
         print(self.speed)
 
@@ -179,6 +174,7 @@ class Environment:
         reward = font.render(f"reward: {self.player.last_reward}", True, pygame.Color('white'))
         epsilon = font.render(f"randomness: {config.EPSILON}", True, pygame.Color('white'))
         alpha = font.render(f"alpha: {config.ALPHA}", True, pygame.Color('white'))
+        speed = font.render(f"Speed: {round(self.speed/10)}", True, pygame.Color('white'))
         surf.blit(iterations, ((W / 2) - 33, 20))
         surf.blit(best_score, ((W / 2) - 10, 55))
         surf.blit(pos_x, (20, 20))
@@ -188,3 +184,4 @@ class Environment:
         surf.blit(reward, (20, 100))
         surf.blit(epsilon, (20, 120))
         surf.blit(alpha, (20, 140))
+        surf.blit(speed, (20, 160))

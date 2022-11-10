@@ -2,6 +2,7 @@ import os
 import pickle
 import random
 
+import config
 from config import ACTIONS, FILE_QTABLE
 
 
@@ -13,15 +14,17 @@ global is_init
 def init_qtable():
     if os.path.exists(FILE_QTABLE):
         load(FILE_QTABLE)
+        config.EPSILON = 0.0
         return
 
     result = {}
     states = {}
 
-    for x in range(-64, 64):
-        for y in range(-64, 64):
-            for z in range(-64, 64):
-                states[(x, y, z)] = 0
+    for x in range(-16, 16):
+        for y in range(-16, 16):
+            for z in range(-16, 16):
+                for s in range(-16, 16):
+                    states[(x, y, z, s)] = 0
 
     for state in states:
         result[state] = {}

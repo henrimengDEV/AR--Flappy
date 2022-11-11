@@ -2,13 +2,7 @@ import random
 
 from config import *
 
-
 class Pipe:
-    """
-    This class contains the pipe object which is itself a collection of 2 pipes
-    inverted w.r.t each other
-    """
-
     def __init__(self, x=W // 2, y=H - 50 - 320):
         self.x = x
         self.y = y
@@ -23,18 +17,6 @@ class Pipe:
 
         self.scored = False
         self.visible = True
-
-    @property
-    def rectangle_top(self):
-        return pygame.Rect(round(self.x), 0, self.w, self.h1)
-
-    @property
-    def rectangle_bot(self):
-        return pygame.Rect(round(self.x), self.rectangle_top.bottom + self.gap, self.w, self.h2)
-
-    @property
-    def rectangle_middle(self):
-        return pygame.Rect(round(self.x), self.rectangle_top.bottom, self.w, self.gap)
 
     def move(self, speed, dt):
         self.x -= speed * dt
@@ -53,5 +35,15 @@ class Pipe:
         if not is_next:
             return
         pygame.draw.rect(surf, 'red', self.rectangle_middle)
-        # pygame.draw.rect(surf, 'red', self.rect1)
-        # pygame.draw.rect(surf, 'red', self.rect2)
+
+    @property
+    def rectangle_top(self):
+        return pygame.Rect(round(self.x), 0, self.w, self.h1)
+
+    @property
+    def rectangle_bot(self):
+        return pygame.Rect(round(self.x), self.rectangle_top.bottom + self.gap, self.w, self.h2)
+
+    @property
+    def rectangle_middle(self):
+        return pygame.Rect(round(self.x), self.rectangle_top.bottom, self.w, self.gap)

@@ -1,34 +1,18 @@
-"""
-Entry point for all imports
-Here we will need to alias pygame from kengi.pygame
-"""
-
 import os
-import pickle
 
 import pygame
+START_SPEED = 3
+END_SPEED = 6
 
 W, H = 960, 540
-
 FPS = 90
 TARGET_FPS = 90
-EPSILON = 0.0314
-ITERATION = 1
-ALPHA = 0.7
-BEST_SCORE = 0
 
 ASSETS = 'assets'
 IMAGES = os.path.join(ASSETS, 'images')
 SOUNDS = os.path.join(ASSETS, 'sounds')
 
-SPEED = 3
-
-ACTION_FLAP = "FLAP"
-ACTION_NOTHING = "NOTHING"
-ACTIONS = [ACTION_NOTHING, ACTION_FLAP]
-FILE_QTABLE = 'qtable.dat'
-
-# below are some utility functions
+BEST_SCORE = 0
 
 def load_image(path, alpha=False, scale=1.0, color_key=None):
     img = pygame.image.load(path)

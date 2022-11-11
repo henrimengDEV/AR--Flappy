@@ -1,49 +1,49 @@
 import sys
 
-import pygame.display
+from config import FPS
+import Ia
 
-import config
-import ia
-import qtbl
-from menu import *
-from qtbl import *
+from player import Player
+from environment import Environment
+from Ia import *
+from ia_settings import *
 
 pygame.init()
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode((W, H))
+screen = pygame.display.set_mode((config.W, config.H))
 
-
-def main_game(menu_manager):
-    dt = 1
-    i = 0
+def main_game():
+    player = Player()
+    environment = Environment(player)
+    ia = Ia(player, environment)
 
     while True:
-        i += 1
         events = pygame.event.get()
-
         for e in events:
             if e.type == pygame.QUIT:
+                ia.save(FILE_QTABLE)
                 return
         if e.type == pygame.KEYDOWN:
             if e.key == pygame.K_ESCAPE:
+                ia.save(FILE_QTABLE)
                 return
+        if environment.reset:
+            player = Player()
+            environment = Environment(player)
+            ia.reset(player, environment)
 
-        screen.fill('black')
-        menu_manager.step(events, dt, clock)
-        menu_manager.draw(screen)
+        environment.step()
+        ia.step()
+
+        environment.draw(screen)
+        ia.draw(screen)
 
         pygame.display.update()
-        dt = TARGET_FPS * clock.tick(FPS) / 1000
-        if dt == 0:
-            dt = 1
 
-       # print(f"Tentative: {i} score: {menu_manager.menu.score}")
+        clock.tick(FPS)
 
 
 if __name__ == '__main__':
-    qtbl.init_qtable()
-    menu_manager = MenuManager()
-    main_game(menu_manager)
-    qtbl.save(FILE_QTABLE)
+    main_game()
     pygame.quit()
     sys.exit(0)

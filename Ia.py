@@ -1,0 +1,153 @@
+import math
+import pickle
+import random
+
+import config
+import ia_settings
+from config import *
+from ia_settings import *
+
+Q_TABLE_RANGE = 32
+RADAR_RESOLUTION_X = 100
+RADAR_RESOLUTION_Y = 100
+
+class Ia:
+    def __init__(self, agent, environment):
+        self.agent = agent
+        self.environment = environment
+        self.last_state = None
+        self.last_reward = 0
+        self.action = None
+        self.alpha = ALPHA
+        self.alpha_decrease_rate = (ALPHA - ALPHA_MIN) / (ALPHA_DECREASE_END - ALPHA_DECREASE_START)
+        self.gamma = GAMMA
+        self.epsilon_decrease_rate = EPSILON / (EPSILON_DECREASE_END - EPSILON_DECREASE_START)
+        self.min_qtable = -(Q_TABLE_RANGE // 2)
+        self.max_qtable = Q_TABLE_RANGE // 2
+        self.q_table = self.init_qtable()
+
+    def init_qtable(self):
+        if os.path.exists(FILE_QTABLE):
+            ia_settings.EPSILON = 0.0
+            return self.load(FILE_QTABLE)
+
+        result = {}
+        states = {}
+
+        for x in range(self.min_qtable, self.max_qtable):
+            for y in range(self.min_qtable, self.max_qtable):
+                for z in range(self.min_qtable, self.max_qtable):
+                    states[(x, y, z)] = 0
+
+        for state in states:
+            result[state] = {}
+            for action in ACTIONS:
+                result[state][action] = 0
+
+        return result
+
+    def get_states(self):
+        return clamp(self.horizontal_distance_from_next_pipe_clamp(), self.min_qtable, self.max_qtable), \
+               clamp(self.vertical_bot_distance_from_next_pipe_clamp(), self.min_qtable, self.max_qtable), \
+               clamp(self.vertical_top_distance_from_next_pipe_clamp(), self.min_qtable, self.max_qtable)
+
+    def horizontal_distance_from_next_pipe_clamp(self):
+        return math.ceil(self.environment.pipes[0].rectangle_middle.x / RADAR_RESOLUTION_X)
+
+    def vertical_bot_distance_from_next_pipe_clamp(self):
+        return math.ceil((self.environment.pipes[0].rectangle_bot.y - self.agent.rect.y) / RADAR_RESOLUTION_Y)
+
+    def vertical_top_distance_from_next_pipe_clamp(self):
+        return math.ceil((self.agent.rect.y - self.environment.pipes[0].rectangle_top.bottom) / RADAR_RESOLUTION_Y)
+
+    def vertical_middle_distance_from_next_pipe_clamp(self):
+        return math.ceil((self.agent.rect.y - self.environment.pipes[0].rectangle_middle.y) / RADAR_RESOLUTION_Y)
+
+    def velocity(self):
+        if round(self.environment.speed) >= 6:
+            return 1
+        else:
+            return 0
+
+    def step(self):
+        self.update_on_iteration()
+        self.handle_reward()
+
+        state = self.get_states()
+        self.action = self.optimal_action(state)
+
+        self.last_state = (state[0], state[1], state[2])
+
+        if self.action == ia_settings.ACTION_FLAP:
+            self.agent.jump()
+
+    def update_on_iteration(self):
+        if self.environment.reset:
+            ia_settings.NUMBER_OF_ITERATION += 1
+            if ia_settings.NUMBER_OF_ITERATION >= EPSILON_DECREASE_START:
+                if ia_settings.EPSILON > self.epsilon_decrease_rate:
+                    ia_settings.EPSILON -= self.epsilon_decrease_rate
+                else:
+                    ia_settings.EPSILON = 0
+
+            if ia_settings.NUMBER_OF_ITERATION >= ALPHA_DECREASE_START:
+                if ia_settings.ALPHA > self.alpha_decrease_rate * 1.1:
+                    ia_settings.ALPHA -= self.alpha_decrease_rate
+                else:
+                    ia_settings.ALPHA = ALPHA_MIN
+
+    def learn(self, reward):
+        max_q = max(self.q_table[self.last_state].values())
+
+        self.q_table[self.last_state][self.action] = self.alpha * (
+                    reward + self.gamma * max_q - self.q_table[self.last_state][self.action])
+        self.last_reward = reward
+
+    def optimal_action(self, state: tuple[int, int, int]):
+        actions = self.q_table[(math.ceil(state[0]), math.ceil(state[1]), math.ceil(state[2]))]
+
+        if random.uniform(0, 1) < ia_settings.EPSILON:
+            return random.choice(ACTIONS)
+        else:
+            return max(actions, key=actions.get)
+
+    def handle_reward(self):
+        if self.environment.has_scored:
+            self.learn(REWARD)
+            self.environment.has_scored = False
+
+        if self.environment.failed:
+            self.learn(PUNISHMENT)
+
+    def draw(self, surf: pygame.Surface):
+        self.display_informations(surf)
+
+    def display_informations(self, surf):
+        font = pygame.font.SysFont(None, 24)
+        iterations = font.render(f"iteration: {ia_settings.NUMBER_OF_ITERATION}", True, pygame.Color('white'))
+        x_distance = font.render(f"x: {self.horizontal_distance_from_next_pipe_clamp()}", True,
+                            pygame.Color('white'))
+        y_top_distance = font.render(f"y_top: {self.vertical_top_distance_from_next_pipe_clamp()}", True,
+                                  pygame.Color('white'))
+        y_bot_distance = font.render(f"y_bot: {self.vertical_bot_distance_from_next_pipe_clamp()}", True,
+                                pygame.Color('white'))
+        epsilon = font.render(f"randomness: {round(ia_settings.EPSILON, 2)}", True, pygame.Color('white'))
+        alpha = font.render(f"alpha: {round(ia_settings.ALPHA, 2)}", True, pygame.Color('white'))
+        surf.blit(iterations, ((config.W / 2) - 33, 20))
+        surf.blit(x_distance, (20, 20))
+        surf.blit(y_top_distance, (20, 40))
+        surf.blit(y_bot_distance, (20, 60))
+        surf.blit(epsilon, (20, 110))
+        surf.blit(alpha, (20, 90))
+
+    def reset(self, player, environment):
+        self.agent = player
+        self.environment = environment
+
+    def save(self, filename):
+        with open(filename, 'wb') as file:
+            pickle.dump(self.q_table, file)
+
+    def load(self, filename):
+        with open(filename, 'rb') as file:
+            return pickle.load(file)

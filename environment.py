@@ -41,14 +41,14 @@ class Environment:
 
     def stop_game(self):
         config.ITERATION += 1
-        if config.EPSILON > 0.01:
-            config.EPSILON -= 0.01
+        if config.EPSILON > 0.003:
+            config.EPSILON -= 0.003
         else:
             config.EPSILON = 0
 
-        if config.ITERATION > 15:
-            if config.ALPHA > 0.132:
-                config.ALPHA -= 0.0316
+        if config.ITERATION >= 15:
+            if config.ALPHA > 0.1316:
+                config.ALPHA -= 0.0315
             else:
                 config.ALPHA = 0.1
 

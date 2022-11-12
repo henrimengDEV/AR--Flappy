@@ -5,9 +5,9 @@ import random
 from config import *
 from ia.ia_settings import *
 
-Q_TABLE_RANGE = 32
 RADAR_RESOLUTION_X = 100
 RADAR_RESOLUTION_Y = 100
+Q_TABLE_RANGE = 16
 
 
 class ia_advanced:
@@ -73,18 +73,18 @@ class ia_advanced:
         return round(self.environment.speed - START_SPEED)
 
     def step(self):
-        self.update_on_iteration()
+        self.update_parameters()
         self.handle_reward()
 
         states = self.get_states()
-        self.action = self.optimal_action(states)
+        self.action = self.best_action(states)
 
         self.last_state = (states[0], states[1], states[2], states[3])
 
         if self.action == ACTION_FLAP:
             self.agent.jump()
 
-    def update_on_iteration(self):
+    def update_parameters(self):
         global NUMBER_OF_ITERATION
         global EPSILON
         global ALPHA
@@ -115,7 +115,7 @@ class ia_advanced:
                 reward + self.gamma * max_q - self.q_table[self.last_state][self.action])
         self.last_reward = reward
 
-    def optimal_action(self, state: tuple[int, int, int, int]):
+    def best_action(self, state: tuple[int, int, int, int]):
         actions = self.q_table[state[0], state[1], state[2], state[3]]
 
         if random.uniform(0, 1) < EPSILON:

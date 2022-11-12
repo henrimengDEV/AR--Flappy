@@ -24,7 +24,7 @@ class Player:
     def step(self, delta_time):
         self.handle_move(delta_time)
 
-        if pygame.key.get_pressed()[pygame.K_SPACE]:
+        if pygame.mouse.get_pressed(num_buttons=3)[0]:
             self.jump()
 
     def handle_move(self, delta_time):

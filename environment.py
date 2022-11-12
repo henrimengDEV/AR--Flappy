@@ -1,4 +1,5 @@
-from Ia import *
+import config
+from ia.ia_basic import *
 from config import *
 from pipe import Pipe
 
@@ -33,12 +34,11 @@ class Environment:
             10: 400
         }
         self.original_speed = self.speed
-        self.deltaRadarX = 100
-        self.deltaRadarY = 100
 
     def stop_game(self):
-        if self.score > config.BEST_SCORE:
-            config.BEST_SCORE = self.score
+        global BEST_SCORE
+        if self.score > BEST_SCORE:
+            BEST_SCORE = self.score
         self.reset = True
 
     def step(self):
@@ -115,7 +115,8 @@ class Environment:
 
     def display_info_position(self, surf: pygame.Surface):
         font = pygame.font.SysFont(None, 24)
-        best_score = font.render(f"{config.BEST_SCORE}", True, pygame.Color('red'))
+        font_h1 = pygame.font.SysFont("impact", 32)
+        best_score = font_h1.render(f"BEST: {BEST_SCORE} ", True, pygame.Color('white'))
         speed = font.render(f"speed: {self.speed}", True, pygame.Color('white'))
-        surf.blit(best_score, ((W / 2) - 10, 55))
         surf.blit(speed, (W - 120, 20))
+        surf.blit(best_score, ((W / 2) - 55, 25))

@@ -1,6 +1,8 @@
 import os
 
 import pygame
+""" GAME SETTINGS """
+
 START_SPEED = 3
 END_SPEED = 6
 

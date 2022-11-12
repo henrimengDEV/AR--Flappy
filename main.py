@@ -33,9 +33,9 @@ def main_game():
             ia.reset(player, environment)
 
         environment.step()
-        ia.step()
-
         environment.draw(screen)
+
+        ia.step()
         ia.draw(screen)
 
         pygame.display.update()

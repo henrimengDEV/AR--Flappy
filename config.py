@@ -3,13 +3,14 @@ import os
 import pygame
 """ GAME SETTINGS """
 
-START_SPEED = 3
-END_SPEED = 6
+START_SPEED = 2
+END_SPEED = 10
 
 W, H = 960, 540
-FPS = 90
-TARGET_FPS = 90
+FPS = 180
+TARGET_FPS = 180
 
+DT = 1
 ASSETS = 'assets'
 IMAGES = os.path.join(ASSETS, 'images')
 SOUNDS = os.path.join(ASSETS, 'sounds')

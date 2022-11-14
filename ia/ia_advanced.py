@@ -3,7 +3,7 @@ import pickle
 import random
 
 from config import *
-from ia.ia_settings import *
+from ia.ia_advanced_settings import *
 
 RADAR_RESOLUTION_X = 100
 RADAR_RESOLUTION_Y = 100
@@ -70,7 +70,7 @@ class ia_advanced:
         return math.ceil((self.agent.rect.y - self.environment.pipes[0].rectangle_middle.y) / RADAR_RESOLUTION_Y)
 
     def velocity(self):
-        return round(self.environment.speed - START_SPEED)
+        return math.ceil((self.environment.speed) * 3 / END_SPEED)
 
     def step(self):
         self.update_parameters()

@@ -2,8 +2,9 @@ import math
 import pickle
 import random
 
+import config
 from config import *
-from ia.ia_settings import *
+from ia.ia_basic_settings import *
 
 RADAR_RESOLUTION_X = 100
 RADAR_RESOLUTION_Y = 100
@@ -24,6 +25,7 @@ class ia_basic:
         self.min_qtable = -(Q_TABLE_RANGE // 2)
         self.max_qtable = Q_TABLE_RANGE // 2
         self.q_table = self.init_qtable()
+        self.set_environment_param()
 
     def init_qtable(self):
         if os.path.exists(FILE_QTABLE):
@@ -150,3 +152,7 @@ class ia_basic:
     def load(self, filename):
         with open(filename, 'rb') as file:
             return pickle.load(file)
+
+    def set_environment_param(self):
+        config.START_SPEED = 3
+        config.END_SPEED = 6

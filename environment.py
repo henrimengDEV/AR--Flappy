@@ -8,14 +8,13 @@ class Environment:
         self.player = player
         self.has_scored = False
         self.failed = False
-        self.delta_time = 1
         self.reset = False
         self.background = load_image(os.path.join(IMAGES, 'bg.png'))
         self.ground_img = load_image(os.path.join(IMAGES, 'base.png'))
         self.show_score = False
         self.ground_offset = 0
         self.pipes = [Pipe(W // 2 + i * 200) for i in range(5)]
-        self.speed = START_SPEED
+        self.speed = config.START_SPEED
         self.stopped = False
         self.score = 0
         self.score_img = load_image(os.path.join(IMAGES, 'score.png'), alpha=True)
@@ -26,12 +25,12 @@ class Environment:
             2: 200,
             3: 225,
             4: 250,
-            5: 275,
-            6: 300,
-            7: 325,
-            8: 350,
-            9: 375,
-            10: 400
+            5: 250,
+            6: 275,
+            7: 275,
+            8: 275,
+            9: 300,
+            10: 300
         }
         self.original_speed = self.speed
 
@@ -59,7 +58,7 @@ class Environment:
                 self.failed = True
                 self.stop_game()
 
-            self.player.step(self.delta_time)
+            self.player.step(config.DT)
 
     def draw(self, surf: pygame.Surface):
         self.default_surface(surf)
@@ -72,13 +71,13 @@ class Environment:
         return player_rect.top < 0 or player_rect.bottom > H - 50
 
     def handle_speed(self):
-        self.original_speed += 0.0005 * self.delta_time
-        self.original_speed = clamp(self.original_speed, START_SPEED, END_SPEED)
+        self.original_speed += 0.0005 * config.DT
+        self.original_speed = clamp(self.original_speed, config.START_SPEED, config.END_SPEED)
         self.speed = round(self.original_speed, 2)
 
     def handle_map(self):
-        self.ground_offset -= math.ceil(self.speed) * self.delta_time
-        self.pipe_spawner -= math.ceil(self.speed) * self.delta_time
+        self.ground_offset -= math.ceil(self.speed) * config.DT
+        self.pipe_spawner -= math.ceil(self.speed) * config.DT
         if self.pipe_spawner <= -self.pipe_spawn_distances[round(self.speed)]:
             self.pipe_spawner = 0
             self.pipes.append(Pipe(self.pipes[-1].x + self.pipe_spawn_distances[round(self.speed)]))
@@ -86,7 +85,7 @@ class Environment:
             self.ground_offset = 0
 
     def handle_pipe(self, i):
-        i.move(self.speed, self.delta_time)
+        i.move(self.speed, config.DT)
         if i.x < self.player.x - round(i.x):
             i.visible = False
             if not i.scored:

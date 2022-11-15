@@ -45,7 +45,7 @@ def ia_training_basic(learning=True):
 def ia_training_advanced(learning=True):
     player = Player()
     environment = Environment(player)
-    ia = ia_advanced(player, environment)
+    ia = ia_advanced(player, environment, learning)
 
     while True:
         events = pygame.event.get()

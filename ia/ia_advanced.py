@@ -161,6 +161,7 @@ class ia_advanced:
         surf.blit(epsilon, (20, 130))
 
     def reset(self, player, environment):
+        self.history.append(self.environment.score)
         self.agent = player
         self.environment = environment
 

@@ -78,7 +78,7 @@ class Environment:
     def handle_map(self):
         self.ground_offset -= math.ceil(self.speed) * config.DT
         self.pipe_spawner -= math.ceil(self.speed) * config.DT
-        if self.pipe_spawner <= -self.pipe_spawn_distances[round(self.speed)]:
+        if self.pipe_spawner <= -self.pipe_spawn_distances[math.ceil(self.speed)]:
             self.pipe_spawner = 0
             self.pipes.append(Pipe(self.pipes[-1].x + self.pipe_spawn_distances[round(self.speed)]))
         if self.ground_offset < -self.ground_img.get_width():
@@ -88,6 +88,7 @@ class Environment:
         i.move(self.speed, config.DT)
         if i.x < self.player.x - round(i.x):
             i.visible = False
+            self.pipes.remove(i)
             if not i.scored:
                 self.score += 1
                 i.scored = True

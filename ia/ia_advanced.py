@@ -11,7 +11,9 @@ Q_TABLE_RANGE = 16
 
 
 class ia_advanced:
-    def __init__(self, agent, environment):
+    def __init__(self, agent, environment, learning=True):
+        self.learning = learning
+        self.history = []
         self.velocity_iteration = 0
         self.agent = agent
         self.environment = environment
@@ -33,7 +35,9 @@ class ia_advanced:
             global ALPHA
             EPSILON = 0.0
             ALPHA = ALPHA_MIN
-            return self.load(FILE_QTABLE)
+            qtable, history = self.load(FILE_QTABLE)
+            self.history = history
+            return qtable
 
         result = {}
         states = {}
@@ -125,11 +129,13 @@ class ia_advanced:
 
     def handle_reward(self):
         if self.environment.has_scored:
-            self.learn(REWARD)
+            if self.learning:
+                self.learn(REWARD)
             self.environment.has_scored = False
 
         if self.environment.failed:
-            self.learn(PUNISHMENT)
+            if self.learning:
+                self.learn(PUNISHMENT)
 
     def draw(self, surf: pygame.Surface):
         self.display_informations(surf)
@@ -160,7 +166,7 @@ class ia_advanced:
 
     def save(self, filename):
         with open(filename, 'wb') as file:
-            pickle.dump(self.q_table, file)
+            pickle.dump((self.q_table, self.history), file)
 
     def load(self, filename):
         with open(filename, 'rb') as file:

@@ -3,8 +3,8 @@ import os
 import pygame
 """ GAME SETTINGS """
 
-START_SPEED = 2
-END_SPEED = 10
+START_SPEED = 3
+END_SPEED = 9
 
 W, H = 960, 540
 FPS = 180

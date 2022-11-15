@@ -12,7 +12,9 @@ Q_TABLE_RANGE = 16
 
 
 class ia_basic:
-    def __init__(self, agent, environment):
+    def __init__(self, agent, environment, learning=True):
+        self.learning = learning
+        self.history = []
         self.agent = agent
         self.environment = environment
         self.last_state = None
@@ -31,7 +33,9 @@ class ia_basic:
         if os.path.exists(FILE_QTABLE):
             global EPSILON
             EPSILON = 0.0
-            return self.load(FILE_QTABLE)
+            qtable, history = self.load(FILE_QTABLE)
+            self.history = history
+            return qtable
 
         result = {}
         states = {}
@@ -114,11 +118,13 @@ class ia_basic:
 
     def handle_reward(self):
         if self.environment.has_scored:
-            self.learn(REWARD)
+            if self.learning:
+                self.learn(REWARD)
             self.environment.has_scored = False
 
         if self.environment.failed:
-            self.learn(PUNISHMENT)
+            if self.learning:
+                self.learn(PUNISHMENT)
 
     def draw(self, surf: pygame.Surface):
         self.display_informations(surf)
@@ -142,12 +148,13 @@ class ia_basic:
         surf.blit(iterations, ((W / 2) - 55, 10))
 
     def reset(self, player, environment):
+        self.history.append(self.environment.score)
         self.agent = player
         self.environment = environment
 
     def save(self, filename):
         with open(filename, 'wb') as file:
-            pickle.dump(self.q_table, file)
+            pickle.dump((self.q_table, self.history), file)
 
     def load(self, filename):
         with open(filename, 'rb') as file:

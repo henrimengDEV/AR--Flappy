@@ -111,8 +111,8 @@ def classic_game():
 
 
 if __name__ == '__main__':
-    learning = False
-    iteration = 10
+    learning = True
+    iteration = 100
     """ Play a classic game """
     #classic_game()
 

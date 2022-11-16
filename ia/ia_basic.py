@@ -4,6 +4,7 @@ import random
 
 import config
 from config import *
+from ia import ia_basic_settings
 from ia.ia_basic_settings import *
 
 RADAR_RESOLUTION_X = 100
@@ -20,19 +21,17 @@ class ia_basic:
         self.last_state = None
         self.last_reward = 0
         self.action = None
-        self.alpha = ALPHA
-        self.alpha_decrease_rate = (ALPHA - ALPHA_MIN) / (ALPHA_DECREASE_END - ALPHA_DECREASE_START)
+        self.alpha = ia_basic_settings.ALPHA
+        self.alpha_decrease_rate = (ia_basic_settings.ALPHA - ALPHA_MIN) / (ALPHA_DECREASE_END - ALPHA_DECREASE_START)
         self.gamma = GAMMA
-        self.epsilon_decrease_rate = EPSILON / (EPSILON_DECREASE_END - EPSILON_DECREASE_START)
+        self.epsilon_decrease_rate = ia_basic_settings.EPSILON / (EPSILON_DECREASE_END - EPSILON_DECREASE_START)
         self.min_qtable = -(Q_TABLE_RANGE // 2)
         self.max_qtable = Q_TABLE_RANGE // 2
         self.q_table = self.init_qtable()
-        self.set_environment_param()
 
     def init_qtable(self):
         if os.path.exists(FILE_QTABLE):
-            global EPSILON
-            EPSILON = 0.0
+            ia_basic_settings.EPSILON = 0.0
             qtable, history = self.load(FILE_QTABLE)
             self.history = history
             return qtable
@@ -82,24 +81,21 @@ class ia_basic:
             self.agent.jump()
 
     def update_parameters(self):
-        global NUMBER_OF_ITERATION
-        global EPSILON
-        global ALPHA
         if self.environment.reset:
-            NUMBER_OF_ITERATION += 1
-            if NUMBER_OF_ITERATION >= EPSILON_DECREASE_START:
-                if EPSILON > self.epsilon_decrease_rate:
-                    EPSILON -= self.epsilon_decrease_rate
+            config.NUMBER_OF_ITERATION += 1
+            if config.NUMBER_OF_ITERATION >= EPSILON_DECREASE_START:
+                if ia_basic_settings.EPSILON > self.epsilon_decrease_rate:
+                    ia_basic_settings.EPSILON -= self.epsilon_decrease_rate
                 else:
-                    EPSILON = 0
-            if NUMBER_OF_ITERATION >= ALPHA_DECREASE_START:
-                if ALPHA > self.alpha_decrease_rate * 1.1:
-                    ALPHA -= self.alpha_decrease_rate
+                    ia_basic_settings.EPSILON = 0
+            if config.NUMBER_OF_ITERATION >= ALPHA_DECREASE_START:
+                if ia_basic_settings.ALPHA > self.alpha_decrease_rate * 1.1:
+                    ia_basic_settings.ALPHA -= self.alpha_decrease_rate
                 else:
-                    ALPHA = ALPHA_MIN
+                    ia_basic_settings.ALPHA = ALPHA_MIN
 
         if pygame.key.get_pressed()[pygame.K_UP]:
-            EPSILON += self.epsilon_decrease_rate
+            ia_basic_settings.EPSILON += self.epsilon_decrease_rate
 
     def learn(self, reward):
         max_q = max(self.q_table[self.last_state].values())
@@ -111,7 +107,7 @@ class ia_basic:
     def best_action(self, state: tuple[int, int, int]):
         actions = self.q_table[state[0], state[1], state[2]]
 
-        if random.uniform(0, 1) < EPSILON:
+        if random.uniform(0, 1) < ia_basic_settings.EPSILON:
             return random.choice(ACTIONS)
         else:
             return max(actions, key=actions.get)
@@ -137,9 +133,9 @@ class ia_basic:
                                      pygame.Color('white'))
         y_bot_distance = font.render(f"y_bot: {self.vertical_bot_distance_from_next_pipe_clamp()}", True,
                                      pygame.Color('white'))
-        epsilon = font.render(f"randomness: {round(EPSILON, 2)}", True, pygame.Color('white'))
-        alpha = font.render(f"alpha: {round(ALPHA, 2)}", True, pygame.Color('white'))
-        iterations = font.render(f"iteration: {NUMBER_OF_ITERATION}", True, pygame.Color('white'))
+        epsilon = font.render(f"randomness: {round(ia_basic_settings.EPSILON, 2)}", True, pygame.Color('white'))
+        alpha = font.render(f"alpha: {round(ia_basic_settings.ALPHA, 2)}", True, pygame.Color('white'))
+        iterations = font.render(f"iteration: {config.NUMBER_OF_ITERATION}", True, pygame.Color('white'))
         surf.blit(x_distance, (20, 20))
         surf.blit(y_top_distance, (20, 40))
         surf.blit(y_bot_distance, (20, 60))
@@ -159,7 +155,3 @@ class ia_basic:
     def load(self, filename):
         with open(filename, 'rb') as file:
             return pickle.load(file)
-
-    def set_environment_param(self):
-        config.START_SPEED = 3
-        config.END_SPEED = 6

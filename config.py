@@ -7,8 +7,8 @@ START_SPEED = 3
 END_SPEED = 9
 
 W, H = 960, 540
+
 FPS = 180
-TARGET_FPS = 180
 
 DT = 1
 ASSETS = 'assets'
@@ -16,6 +16,7 @@ IMAGES = os.path.join(ASSETS, 'images')
 SOUNDS = os.path.join(ASSETS, 'sounds')
 
 BEST_SCORE = 0
+NUMBER_OF_ITERATION = 1
 
 def load_image(path, alpha=False, scale=1.0, color_key=None):
     img = pygame.image.load(path)

@@ -74,7 +74,7 @@ class ia_advanced:
         return math.ceil((self.agent.rect.y - self.environment.pipes[0].rectangle_middle.y) / RADAR_RESOLUTION_Y)
 
     def velocity(self):
-        return math.ceil((self.environment.speed - START_SPEED) * 2 / (END_SPEED - START_SPEED))
+        return math.ceil((self.environment.speed - START_SPEED) * 3 / (END_SPEED - START_SPEED))
 
     def step(self):
         self.update_parameters()

@@ -1,12 +1,11 @@
 import sys
+
 import matplotlib.pyplot as plt
 import pygame.event
 
-import config
 from environment import Environment
-from ia import ia_basic, ia_advanced_settings, ia_basic_settings
+from ia import ia_basic, ia_advanced_settings
 from ia.ia_advanced import ia_advanced
-from ia.ia_advanced_settings import *
 from ia.ia_basic import *
 from player import Player
 
@@ -111,8 +110,8 @@ def classic_game():
 
 
 if __name__ == '__main__':
-    learning = True
-    iteration = 100
+    learning = False
+    iteration = 10
     """ Play a classic game """
     #classic_game()
 

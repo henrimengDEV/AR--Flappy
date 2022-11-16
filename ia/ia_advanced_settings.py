@@ -18,4 +18,4 @@ ACTION_FLAP = "FLAP"
 ACTION_NOTHING = "NOTHING"
 ACTIONS = [ACTION_NOTHING, ACTION_FLAP]
 
-FILE_QTABLE = '../qtable_advanced.dat'
+FILE_QTABLE = './qtable_advanced.dat'

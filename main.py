@@ -110,16 +110,16 @@ def classic_game():
 
 
 if __name__ == '__main__':
-    learning = False
+    learning = True
     iteration = 10
     """ Play a classic game """
-    #classic_game()
+    classic_game()
 
     """ Basic IA training (3 states: X-axis, Y-axis top, Y-axis bottom) (Faster)"""
-    ia_training_basic(iteration, learning)
+    #ia_training_basic(iteration, learning)
 
     """ Advanced IA training (4 states: X-axis, Y-axis top, Y-axis bottom, Velocity) (Longer)"""
-    ia_training_advanced(iteration, learning)
+    #ia_training_advanced(iteration, learning)
 
     """ Play a classic game """
 
